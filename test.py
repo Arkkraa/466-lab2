@@ -1,4 +1,11 @@
 import json
+import string
+
+def stripWord(word):
+   """Generates a term based on the word given"""
+   return word.strip(' ' + string.punctuation)
+
+   
 
 f = open('input.json')
 records = json.loads(f.read())
@@ -18,7 +25,13 @@ for r in records:
    meta['Committee'] = r['Committee']
    metadata.append(meta)
 
-   documents.append(r['text'])
+   terms = []
+
+   for word in r['text'].split():
+      w = stripWord(word)
+      if w:
+         terms.append(w)
+   documents.append(terms)
 
 for d in documents:
    print d
