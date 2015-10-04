@@ -14,7 +14,8 @@ def create_words_data(results):
 			words_file[i] = words
 		i += 1
 
-	#pprint.pprint(words_file)
+	with open('parsed_text.json', 'w') as pt:
+		json.dump(words_file, pt)
 		
 def main():
 	fp = open("SB277Utter.json", 'r+')
