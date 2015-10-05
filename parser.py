@@ -14,7 +14,7 @@ def create_words_data(results):
 		words = {'pid': r['pid'], 'text': text}
 		if words not in words_file.values():
 			words_file[i] = words
-		i += 1
+			i += 1
 
 	with open('parsed_text.json', 'w') as pt:
 		json.dump(words_file, pt, indent=0)

@@ -1,6 +1,16 @@
 import json
 import pprint
 from porter_stem import *
+import math
+
+def get_inv_doc_frequencies(data, count):
+	inv_doc_freq = dict()
+
+	for key, value in data.items():
+		inv_doc_freq[key] = math.log(count/value, 2)
+
+def get_doc_count(data):
+	return len(data)
 
 def get_doc_frequencies(data):
 	doc_freq = dict()
@@ -15,7 +25,6 @@ def get_doc_frequencies(data):
 					doc_freq[word] += 1
 				seen.append(word)
 
-	pprint.pprint(doc_freq)
 	return doc_freq
 
 def get_term_frequencies(data):
@@ -95,6 +104,8 @@ if __name__ == '__main__':
 	data = stem_data(data)
 	term_freq = get_term_frequencies(data)
 	doc_freq = get_doc_frequencies(data)
+	doc_count = get_doc_count(data)
+	inv_doc_freq = get_inv_doc_frequencies(doc_freq, doc_count)
 
 
 
