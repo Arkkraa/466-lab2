@@ -1,13 +1,13 @@
 import json
 import pprint
-from stem import *
+from porter_stem import *
 
 def get_doc_frequencies(data):
 	doc_freq = dict()
 
 	for key, value in data.items():
 		seen = []
-		for word in value.keys():
+		for word in value['text']:
 			if word not in seen:
 				if word not in doc_freq.keys():
 					doc_freq[word] = 1
@@ -16,7 +16,7 @@ def get_doc_frequencies(data):
 				seen.append(word)
 
 	pprint.pprint(doc_freq)
-
+	return doc_freq
 
 def get_term_frequencies(data):
 	model = dict()
@@ -39,7 +39,7 @@ def stem_data(data):
 	porter_stem('stem.json')
 
 	with open('stemmed.json', 'r') as stemmed:
-		data = json.load(stemmed)
+		data = {int(key): value for key, value in json.load(stemmed).items()}
 
 	return data
 
@@ -93,8 +93,8 @@ if __name__ == '__main__':
 	data = get_data()
 	data = remove_stop_words(data)
 	data = stem_data(data)
-	#term_freq = get_term_frequencies(data)
-	#doc_freq = get_doc_frequencies(term_freq)
+	term_freq = get_term_frequencies(data)
+	doc_freq = get_doc_frequencies(data)
 
 
 
