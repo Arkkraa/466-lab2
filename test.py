@@ -25,6 +25,7 @@ records = json.loads(f.read())
 
 metadata = []
 documents = []
+vocabulary = {}
 
 stopwords =  getStopwords()
 porter = stemmer.PorterStemmer()
@@ -41,7 +42,7 @@ for r in records:
    meta['Committee'] = r['Committee']
    metadata.append(meta)
 
-   terms = []
+   termFrequency = {}
 
    for word in r['text'].split():
       word = stripWord(word)
@@ -53,10 +54,17 @@ for r in records:
       
       if word not in stopwords:
          word = porter.stem(word, 0, len(word) - 1)
-         terms.append(word)
+         termFrequency[word] = termFrequency.get(word, 0) + 1
 
-   documents.append(terms)
+   for term in termFrequency:
+      # used for document frequency
+      vocabulary[term] = vocabulary.get(term,0) + 1
 
-for d in documents:
-   print d
+   documents.append(termFrequency)
+
+#for d in documents:
+#   print d
+
+for k in vocabulary:
+   print k, ':', vocabulary[k]
 
