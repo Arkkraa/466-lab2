@@ -1,5 +1,18 @@
 import json
 import string
+import stemmer
+
+STOPWORDS_FILE = "stopwords.txt"
+
+def getStopwords():
+   """ Loads stopwords from file and returns a dictionary """
+   stopwords = {}
+   f = open(STOPWORDS_FILE)
+   for line in f:
+      line = line.strip()
+      stopwords[line] = True
+   return stopwords
+
 
 def stripWord(word):
    """Generates a term based on the word given"""
@@ -12,6 +25,9 @@ records = json.loads(f.read())
 
 metadata = []
 documents = []
+
+stopwords =  getStopwords()
+porter = stemmer.PorterStemmer()
 
 for r in records:
    # extract people data 
@@ -28,9 +44,17 @@ for r in records:
    terms = []
 
    for word in r['text'].split():
-      w = stripWord(word)
-      if w:
-         terms.append(w)
+      word = stripWord(word)
+      word = word.lower()
+
+      # in case a word is just made up of punctuation like !!
+      if not word:
+         continue
+      
+      if word not in stopwords:
+         word = porter.stem(word, 0, len(word) - 1)
+         terms.append(word)
+
    documents.append(terms)
 
 for d in documents:
