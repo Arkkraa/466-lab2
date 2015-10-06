@@ -55,16 +55,25 @@ for r in records:
       if word not in stopwords:
          word = porter.stem(word, 0, len(word) - 1)
          termFrequency[word] = termFrequency.get(word, 0) + 1
-
-   for term in termFrequency:
-      # used for document frequency
-      vocabulary[term] = vocabulary.get(term,0) + 1
-
+   
    documents.append(termFrequency)
 
-#for d in documents:
-#   print d
+   for term in termFrequency:
+      # update document frequencyi for each term
+      vocabulary[term] = vocabulary.get(term,0) + 1
 
-for k in vocabulary:
-   print k, ':', vocabulary[k]
+# compute term frequency * inverse document frequency
+numOfDocuments = len(documents)
+for d in documents:
 
+   # find the max frequency in the document
+   maxFrequency = 0
+   for term in d:
+      freq = d[term]
+      if freq > maxFrequency:
+         maxFrequency = freq
+
+   for term in d:
+      tf = d[term] / maxFrequency
+      idf = log(numOfDocuments / vocabulary[term],2)
+      d[term] = tf * idf
