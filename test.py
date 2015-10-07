@@ -2,6 +2,7 @@ import json
 import string
 import stemmer
 import math
+import pprint
 
 STOPWORDS_FILE = "stopwords.txt"
 
@@ -57,7 +58,8 @@ def getData(filename):
             word = porter.stem(word, 0, len(word) - 1)
             termFrequency[word] = termFrequency.get(word, 0) + 1
       
-      documents.append(termFrequency)
+      if termFrequency not in documents:
+         documents.append(termFrequency)
 
    
    return metadata, documents
@@ -101,7 +103,8 @@ def generateTf(documents, vocabulary):
 
 
 if __name__ == '__main__':   
-   rawdata = 'input.json' 
+   #rawdata = 'input.json' 
+   rawdata = 'SB277Utter.json'
    metadata, documents = getData(rawdata)
    vocabulary = getVocab(documents)
    generateIdf(vocabulary, len(documents))
@@ -125,5 +128,5 @@ if __name__ == '__main__':
          word = porter.stem(word, 0, len(word) - 1)
          queryVector[word] = queryVector.get(word, 0) + 1
    
-   for k in documents[2]:
-      print k, ':', documents[2][k]
+   #for k in documents[2]:
+   #   print k, ':', documents[2][k]
