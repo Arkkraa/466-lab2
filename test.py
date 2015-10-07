@@ -1,6 +1,7 @@
 import json
 import string
 import stemmer
+import math
 
 STOPWORDS_FILE = "stopwords.txt"
 
@@ -16,7 +17,7 @@ def getStopwords():
 
 def stripWord(word):
    """Generates a term based on the word given"""
-   return word.strip(' ' + string.punctuation)
+   return word.strip(string.punctuation)
 
 def getData(filename):
    """ Return metadata and documents from filename """
@@ -58,7 +59,8 @@ def getData(filename):
       
       documents.append(termFrequency)
 
-      return metadata, documents
+   
+   return metadata, documents
 
 
 def getVocab(documents):
@@ -73,11 +75,17 @@ def getVocab(documents):
          vocabulary[term] = vocabulary.get(term,0) + 1
    return vocabulary
 
+def generateIdf(vocabulary, numOfDocuments):
+   """ Generate inverse document frequency for the given vocabulary """
 
-def generateTfAndIdf(documents, vocabulary):
+   for term in vocabulary:
+      inverse = float(numOfDocuments) / vocabulary[term]
+      vocabulary[term] = math.log(inverse, 2)
+
+
+def generateTf(documents, vocabulary):
    """ Compute term frequency * inverse document frequency """
 
-   numOfDocuments = len(documents)
    for termFrequencies in documents:
       # find the max frequency in the document
       maxFrequency = 0
@@ -87,8 +95,8 @@ def generateTfAndIdf(documents, vocabulary):
             maxFrequency = freq
 
       for term in termFrequencies:
-         tf = termFrequencies[term] / maxFrequency
-         idf = log(numOfDocuments / vocabulary[term],2)
+         tf = termFrequencies[term] / float(maxFrequency)
+         idf = vocabulary[term]
          termFrequencies[term] = tf * idf
 
 
@@ -96,4 +104,25 @@ if __name__ == '__main__':
    rawdata = 'input.json' 
    metadata, documents = getData(rawdata)
    vocabulary = getVocab(documents)
-   generateTfAndIdf(documents, vocabulary)
+   generateIdf(vocabulary, len(documents))
+   generateTf(documents, vocabulary)
+
+   query = raw_input('Your query: ')
+   queryVector = {}
+   stopwords =  getStopwords()
+   porter = stemmer.PorterStemmer()
+
+   for word in query.split():
+      word = stripWord(word)
+      word = word.lower()
+
+      # in case a word is just made up of punctuation like !!
+      if not word:
+         continue
+      
+      if word not in stopwords:
+         word = porter.stem(word, 0, len(word) - 1)
+         queryVector[word] = queryVector.get(word, 0) + 1
+   
+   for k in documents[2]:
+      print k, ':', documents[2][k]
