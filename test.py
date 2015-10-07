@@ -120,6 +120,7 @@ if __name__ == '__main__':
       if not word:
          continue
       
+      # compute frequency of term
       if word not in stopwords:
          word = porter.stem(word, 0, len(word) - 1)
          queryVector[word] = queryVector.get(word, 0) + 1
