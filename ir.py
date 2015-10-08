@@ -3,6 +3,7 @@ import string
 import stemmer
 import math
 import vector_utils, query_utils
+import pickle
 
 STOPWORDS_FILE = "stopwords.txt"
 
@@ -101,8 +102,23 @@ def generateTf(documents, vocabulary):
          idf = vocabulary[term]
          termFrequencies[term] = tf * idf
 
+def saveSystem(metadata, documents, vocabulary):
+   """ Persist the entire model """
+   f = open("metadata.db", 'w')
+   pickle.dump(metadata, f)
+   f.close()
+
+   f = open("documents.db", 'w')
+   pickle.dump(metadata, f)
+   f.close()
+
+   f = open("vocabulary.db", 'w')
+   pickle.dump(metadata, f)
+   f.close()
+
 
 if __name__ == '__main__':   
+   # start up the system and create models
    #rawdata = 'input.json' 
    rawdata = 'SB277Utter.json'
    metadata, documents = getData(rawdata)
@@ -110,8 +126,11 @@ if __name__ == '__main__':
    generateIdf(vocabulary, len(documents))
    generateTf(documents, vocabulary)
 
-   query = raw_input('Your query: ')
-   queryVector = query_utils.queryVectorFromString(query)
-   query_utils.updateWeights(queryVector, vocabulary)
-   similarities =  query_utils.cosineSimilarity(queryVector, documents)
-   print query_utils.getTopTen(similarities)
+   # save models to disk
+   saveSystem(metadata, documents, vocabulary)
+
+#   query = raw_input('Your query: ')
+#   queryVector = query_utils.queryVectorFromString(query)
+#   query_utils.updateWeights(queryVector, vocabulary)
+#   similarities =  query_utils.cosineSimilarity(queryVector, documents)
+#   print query_utils.getTopTen(similarities)
