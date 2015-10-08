@@ -113,4 +113,5 @@ if __name__ == '__main__':
    query = raw_input('Your query: ')
    queryVector = query_utils.queryVectorFromString(query)
    query_utils.updateWeights(queryVector, vocabulary)
-   print query_utils.cosineSimilarity(queryVector, documents)
+   similarities =  query_utils.cosineSimilarity(queryVector, documents)
+   print query_utils.getTopTen(similarities)

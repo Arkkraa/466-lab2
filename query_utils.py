@@ -47,6 +47,11 @@ def queryVectorFromString(query):
 
    return queryVector
 
+def getTopTen(lst):
+   """ Returns the top ten query matches, along with the document index for future retrival """
+   similarityWithIndex = list(enumerate(lst))
+   return sorted(similarityWithIndex)[:10]
+
 if __name__ == '__main__':
    query = raw_input("query: ")
    print queryVectorFromString(query)
