@@ -7,7 +7,7 @@ def dotProduct(v1, v2):
    """ Compute the dot product """
    result = 0
    for k in v1:
-      result += v1[k] * v2[k]
+      result += v1[k] * v2.get(k, 0)
    return result
 
 def distance(vector):
