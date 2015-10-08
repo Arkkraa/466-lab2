@@ -4,6 +4,8 @@ import stemmer
 import math
 import vector_utils, query_utils
 import pickle
+import pprint
+import re
 
 STOPWORDS_FILE = "stopwords.txt"
 
@@ -29,6 +31,7 @@ def getData(filename):
 
    metadata = []
    documents = []
+   text = []
 
    stopwords =  getStopwords()
    porter = stemmer.PorterStemmer()
@@ -47,7 +50,7 @@ def getData(filename):
 
       termFrequency = {}
 
-      for word in r['text'].split():
+      for word in re.split(r"\s+|\.+", r['text']):
          word = stripWord(word)
          word = word.lower()
 
@@ -60,10 +63,11 @@ def getData(filename):
             termFrequency[word] = termFrequency.get(word, 0) + 1
       
       if termFrequency not in documents:
+         text.append(r['text'])
          documents.append(termFrequency)
 
    
-   return metadata, documents
+   return metadata, documents, text
 
 
 def getVocab(documents):
@@ -121,16 +125,20 @@ if __name__ == '__main__':
    # start up the system and create models
    #rawdata = 'input.json' 
    rawdata = 'SB277Utter.json'
-   metadata, documents = getData(rawdata)
+   metadata, documents, text = getData(rawdata)
    vocabulary = getVocab(documents)
    generateIdf(vocabulary, len(documents))
    generateTf(documents, vocabulary)
 
    # save models to disk
-   saveSystem(metadata, documents, vocabulary)
+   #saveSystem(metadata, documents, vocabulary)
 
-#   query = raw_input('Your query: ')
-#   queryVector = query_utils.queryVectorFromString(query)
-#   query_utils.updateWeights(queryVector, vocabulary)
-#   similarities =  query_utils.cosineSimilarity(queryVector, documents)
-#   print query_utils.getTopTen(similarities)
+   query = raw_input('Your query: ')
+   queryVector = query_utils.queryVectorFromString(query)
+   query_utils.updateWeights(queryVector, vocabulary)
+   similarities =  query_utils.cosineSimilarity(queryVector, documents)
+   #pprint.pprint(similarities)
+   top_ten = query_utils.getTopTen(similarities)
+   for doc, cos in top_ten:
+      print text[doc]
+      print "cosine: %f" % cos
