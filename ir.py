@@ -29,6 +29,7 @@ def getData(filename):
 
    metadata = []
    documents = []
+   ogText = []
 
    stopwords =  getStopwords()
    porter = stemmer.PorterStemmer()
@@ -43,9 +44,10 @@ def getData(filename):
       meta['date'] = r['date']
       meta['house'] = r['house']
       meta['Committee'] = r['Committee']
-      metadata.append(meta)
 
       termFrequency = {}
+      name = r['first'].lower()
+      termFrequency[name] = 1
 
       for word in r['text'].split():
          word = stripWord(word)
@@ -60,10 +62,12 @@ def getData(filename):
             termFrequency[word] = termFrequency.get(word, 0) + 1
       
       if termFrequency not in documents:
+         metadata.append(meta)
          documents.append(termFrequency)
+         ogText.append(r['text'])
 
    
-   return metadata, documents
+   return metadata, documents, ogText
 
 
 def getVocab(documents):
@@ -102,35 +106,61 @@ def generateTf(documents, vocabulary):
          idf = vocabulary[term]
          termFrequencies[term] = tf * idf
 
-def saveSystem(metadata, documents, vocabulary):
+def saveSystem(metadata, documents, vocabulary, ogText):
    """ Persist the entire model """
    f = open("metadata.db", 'w')
    pickle.dump(metadata, f)
    f.close()
 
    f = open("documents.db", 'w')
-   pickle.dump(metadata, f)
+   pickle.dump(documents, f)
    f.close()
 
    f = open("vocabulary.db", 'w')
-   pickle.dump(metadata, f)
+   pickle.dump(vocabulary, f)
    f.close()
+
+   f = open("ogText.db", 'w')
+   pickle.dump(ogText, f)
+   f.close()
+
+def loadSystem():
+   """ Returns the metadata, documents, and vocabulary ready to be used by the
+   query engine """
+
+   f = open('metadata.db')
+   metadata = pickle.load(f)
+   f.close()
+
+   f = open('documents.db')
+   documents = pickle.load(f)
+   f.close()
+
+   f = open('vocabulary.db')
+   vocabulary = pickle.load(f)
+   f.close()
+
+   f = open('ogText.db')
+   ogText = pickle.load(f)
+   f.close()
+
+   return metadata, documents, vocabulary, ogText
 
 
 if __name__ == '__main__':   
+   print 'creating the model...'
    # start up the system and create models
    #rawdata = 'input.json' 
    rawdata = 'SB277Utter.json'
-   metadata, documents = getData(rawdata)
+   metadata, documents, ogText = getData(rawdata)
+   print 'metadata:', len(metadata)
+   print 'documents:', len(documents)
    vocabulary = getVocab(documents)
    generateIdf(vocabulary, len(documents))
    generateTf(documents, vocabulary)
 
    # save models to disk
-   saveSystem(metadata, documents, vocabulary)
+   print 'saving the model...'
+   saveSystem(metadata, documents, vocabulary, ogText)
+   print 'done!'
 
-#   query = raw_input('Your query: ')
-#   queryVector = query_utils.queryVectorFromString(query)
-#   query_utils.updateWeights(queryVector, vocabulary)
-#   similarities =  query_utils.cosineSimilarity(queryVector, documents)
-#   print query_utils.getTopTen(similarities)

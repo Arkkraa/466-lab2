@@ -23,6 +23,9 @@ def cosine(v1, v2):
    distanceV1 = distance(v1)
    distanceV2 = distance(v2)
 
+   if distanceV1 == 0 or distanceV2 == 0:
+      return 0
+
    return float(top) / (distanceV1 * distanceV2)
 
 

@@ -16,7 +16,7 @@ def updateWeights(queryVector, vocab):
 
    for v in queryVector:
       freq = queryVector[v]
-      queryVector[v] = (0.5 + (0.5 * freq) / maxFreq) * vocab[v]
+      queryVector[v] = (0.5 + (0.5 * freq) / maxFreq) * vocab.get(v, 0)
 
 def cosineSimilarity(queryVector, documents):
    """ Returns a list with the cosine similarity between the query and each
@@ -50,7 +50,7 @@ def queryVectorFromString(query):
 def getTopTen(lst):
    """ Returns the top ten query matches, along with the document index for future retrival """
    similarityWithIndex = list(enumerate(lst))
-   return sorted(similarityWithIndex)[:10]
+   return sorted(similarityWithIndex, key=lambda x: x[1], reverse=True)[:10]
 
 if __name__ == '__main__':
    query = raw_input("query: ")
