@@ -19,8 +19,8 @@ if __name__ == '__main__':
       results = query_utils.getTopTen(similarities)
 
       for result in results:
-         print result[1]
          print ogText[result[0]]
+         print "cosine: " + str(result[1])
          print
 
       print '\n' + 80 * '*'
