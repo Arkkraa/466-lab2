@@ -1,0 +1,23 @@
+Authors:
+--------
+Arkadiy Kraminsky
+Jorge Guevara
+
+Modules:
+--------
+ir.py - parses documents, generates vocabulary, computes formulas, saves model
+stemmer.py -  Porter Stemming Algorithm
+vector_utils.py - vector dot product, distance and cosine
+query_utils.py - Util functions for query processing
+main.py - reads in the model and compares the query to the document collection
+
+Running the system
+------------------
+python ir.py
+python main.py
+
+Notes:
+------
+Ran on the lab computers with Python 2.6.6
+
+
