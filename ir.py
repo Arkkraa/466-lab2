@@ -4,6 +4,8 @@ import stemmer
 import math
 import vector_utils, query_utils
 import pickle
+import pprint
+import re
 
 STOPWORDS_FILE = "stopwords.txt"
 
@@ -29,7 +31,7 @@ def getData(filename):
 
    metadata = []
    documents = []
-   ogText = []
+   text = []
 
    stopwords =  getStopwords()
    porter = stemmer.PorterStemmer()
@@ -49,7 +51,7 @@ def getData(filename):
       name = r['first'].lower()
       termFrequency[name] = 1
 
-      for word in r['text'].split():
+      for word in re.split(r"\s+|\.+", r['text']):
          word = stripWord(word)
          word = word.lower()
 
@@ -63,11 +65,10 @@ def getData(filename):
       
       if termFrequency not in documents:
          metadata.append(meta)
+         text.append(r['text'])
          documents.append(termFrequency)
-         ogText.append(r['text'])
-
    
-   return metadata, documents, ogText
+   return metadata, documents, text
 
 
 def getVocab(documents):
@@ -152,15 +153,12 @@ if __name__ == '__main__':
    # start up the system and create models
    #rawdata = 'input.json' 
    rawdata = 'SB277Utter.json'
-   metadata, documents, ogText = getData(rawdata)
-   print 'metadata:', len(metadata)
-   print 'documents:', len(documents)
+   metadata, documents, text = getData(rawdata)
    vocabulary = getVocab(documents)
    generateIdf(vocabulary, len(documents))
    generateTf(documents, vocabulary)
 
    # save models to disk
    print 'saving the model...'
-   saveSystem(metadata, documents, vocabulary, ogText)
+   saveSystem(metadata, documents, vocabulary, text)
    print 'done!'
-
