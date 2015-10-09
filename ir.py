@@ -4,7 +4,6 @@ import stemmer
 import math
 import vector_utils, query_utils
 import pickle
-import pprint
 import re
 
 STOPWORDS_FILE = "stopwords.txt"
@@ -48,8 +47,8 @@ def getData(filename):
       meta['Committee'] = r['Committee']
 
       termFrequency = {}
-      name = r['first'].lower()
-      termFrequency[name] = 1
+      personType = r['PersonType'].lower()
+      termFrequency[personType] = 1
 
       for word in re.split(r"\s+|\.+", r['text']):
          word = stripWord(word)
